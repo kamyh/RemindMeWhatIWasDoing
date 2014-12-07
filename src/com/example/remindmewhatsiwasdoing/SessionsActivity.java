@@ -9,7 +9,9 @@ import android.support.v7.app.ActionBarActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -56,6 +58,10 @@ public class SessionsActivity extends ActionBarActivity
 		ArrayList<String> listSessions = db.getAllSessionName();
 		TableLayout linearLayout = (TableLayout) findViewById(R.id.mainLayout);
 
+		DisplayMetrics metrics = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(metrics);
+		int widthScreen = metrics.widthPixels;
+
 		linearLayout.removeAllViews();
 
 		Integer count = 0;
@@ -87,10 +93,26 @@ public class SessionsActivity extends ActionBarActivity
 			gap.setText("-----");
 			gap.setTextColor(Color.rgb(127, 140, 141));
 			tr.addView(gap);
-
 			TextView labelDATEsessionNameString = new TextView(this);
+
+			String taskNameDisplay = sessionNameString;
+
+			Paint paint = new Paint();
+			paint.setTextSize(labelDATEsessionNameString.getTextSize());
+
+			boolean cut = false;
+			while (paint.measureText(taskNameDisplay, 0, taskNameDisplay.length()) > (widthScreen * 0.2))
+			{
+				taskNameDisplay = taskNameDisplay.substring(0, taskNameDisplay.length() - 1);
+				cut = true;
+			}
+			if (cut)
+			{
+				taskNameDisplay += "...";
+			}
+
 			labelDATEsessionNameString.setId(200 + count);
-			labelDATEsessionNameString.setText(sessionNameString);
+			labelDATEsessionNameString.setText(taskNameDisplay);
 			labelDATEsessionNameString.setPadding(2, 0, 5, 0);
 			labelDATEsessionNameString.setTextColor(Color.WHITE);
 			tr.addView(labelDATEsessionNameString);

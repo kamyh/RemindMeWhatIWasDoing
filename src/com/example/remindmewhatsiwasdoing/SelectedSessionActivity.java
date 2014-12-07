@@ -14,11 +14,13 @@ import android.support.v4.util.ArrayMap;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -380,6 +382,10 @@ public class SelectedSessionActivity extends ActionBarActivity
 
 		linearLayout.removeAllViews();
 
+		DisplayMetrics metrics = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(metrics);
+		int widthScreen = metrics.widthPixels;
+
 		Integer count = 0;
 		for (String taskName : listTasks)
 		{
@@ -415,10 +421,19 @@ public class SelectedSessionActivity extends ActionBarActivity
 			TextView labelTaskNameString = new TextView(this);
 			labelTaskNameString.setId(200 + count);
 			String taskNameDisplay = taskNameString;
-			if (taskNameString.length() > 14)
+
+			Paint paint = new Paint();
+			paint.setTextSize(labelTaskNameString.getTextSize());
+
+			boolean cut = false;
+			while (paint.measureText(taskNameDisplay, 0, taskNameDisplay.length()) > (widthScreen * 0.3))
 			{
-				taskNameDisplay.substring(0, 11);
-				taskNameDisplay += "...";
+				taskNameDisplay = taskNameDisplay.substring(0, taskNameDisplay.length() - 1);
+				cut = true;
+			}
+			if(cut)
+			{
+				taskNameDisplay += "...   ";
 			}
 			labelTaskNameString.setText(taskNameDisplay);
 			labelTaskNameString.setPadding(2, 0, 5, 0);
