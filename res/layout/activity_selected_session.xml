@@ -1,0 +1,101 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:background="#bdc3c7"
+    android:gravity="fill_horizontal"
+    android:paddingBottom="5dp"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.remindmewhatsiwasdoing.SessionsActivity" >
+
+    <TextView
+        android:id="@+id/selectedSessionName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:text="Session Name"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#2c3e50" />
+
+    <ScrollView
+        android:id="@+id/scrollView_content"
+        android:layout_width="match_parent"
+        android:layout_height="320dp"
+        android:layout_below="@+id/selectedSessionName" >
+
+        <TableLayout
+            android:id="@+id/mainLayoutSelectedSession"
+            android:layout_width="match_parent"
+            android:layout_height="91dp" >
+        </TableLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/LinearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="bottom"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:id="@+id/linearfirst"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/btnDeleteSession"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="1dp"
+                android:layout_weight="1"
+                android:background="#34495e"
+                android:padding="8dp"
+                android:text="@string/remove_session"
+                android:textColor="#bdc3c7" />
+
+            <Button
+                android:id="@+id/btnSend"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="1dp"
+                android:layout_weight="1"
+                android:background="#34495e"
+                android:padding="8dp"
+                android:text="@string/send"
+                android:textColor="#bdc3c7" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:layout_weight="1"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/btnPauseSession"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="1dp"
+                android:layout_weight="1"
+                android:background="#34495e"
+                android:padding="8dp"
+                android:text="@string/status_session_stop"
+                android:textColor="#bdc3c7" />
+
+            <Button
+                android:id="@+id/btnNewTask"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="1dp"
+                android:layout_weight="1"
+                android:background="#34495e"
+                android:padding="8dp"
+                android:text="@string/New_Task"
+                android:textColor="#bdc3c7" />
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>
