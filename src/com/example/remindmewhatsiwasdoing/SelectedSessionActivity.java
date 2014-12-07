@@ -1,6 +1,11 @@
 package com.example.remindmewhatsiwasdoing;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import test.TimeService;
 
@@ -10,6 +15,7 @@ import Tools.MyTimer;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
+import android.util.AttributeSet;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -24,8 +30,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -165,6 +174,22 @@ public class SelectedSessionActivity extends ActionBarActivity
 		final EditText input = new EditText(this);
 		alert.setView(input);
 
+		final LinearLayout mainViewAlert = new LinearLayout(this);
+		mainViewAlert.setOrientation(LinearLayout.VERTICAL);
+
+		final CheckBox chkBox = new CheckBox(this);
+		final TextView labelChkBox = new TextView(this);
+		labelChkBox.setText("   Full");
+		final LinearLayout lineChkBox = new LinearLayout(this);
+
+		lineChkBox.addView(labelChkBox);
+		lineChkBox.addView(chkBox);
+
+		mainViewAlert.addView(input);
+		mainViewAlert.addView(lineChkBox);
+
+		alert.setView(mainViewAlert);
+
 		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener()
 		{
 			public void onClick(DialogInterface dialog, int whichButton)
@@ -175,12 +200,65 @@ public class SelectedSessionActivity extends ActionBarActivity
 				String content = "Session: " + SelectedSessionActivity.this.sessionName + "\n";
 				Cursor res = SelectedSessionActivity.this.db.getAllTasks(SelectedSessionActivity.this.sessionId);
 
-				while (!res.isAfterLast())
+				if (!chkBox.isChecked())
 				{
-					content += res.getString(1) + " - " + res.getString(3) + " - " + res.getString(4) + " - "
-							+ MyTimer.splitToComponentTimes(SelectedSessionActivity.this.db.getElapsedTimeTask(res.getString(1), SelectedSessionActivity.this.sessionId)) + "\n";
+					while (!res.isAfterLast())
+					{
+						content += res.getString(1) + " - " + res.getString(3) + " - " + res.getString(4) + " - "
+								+ MyTimer.splitToComponentTimes(SelectedSessionActivity.this.db.getElapsedTimeTask(res.getString(1), SelectedSessionActivity.this.sessionId)) + "\n";
 
-					res.moveToNext();
+						res.moveToNext();
+					}
+				}
+				else
+				{
+					Cursor res_periods = null;
+					DBHelperSessions db = new DBHelperSessions(SelectedSessionActivity.this);
+					SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy HH:mm:ss", Locale.FRANCE);
+
+					while (!res.isAfterLast())
+					{
+						content += res.getString(1) + " - " + res.getString(3) + " - " + res.getString(4) + " - "
+								+ MyTimer.splitToComponentTimes(SelectedSessionActivity.this.db.getElapsedTimeTask(res.getString(1), SelectedSessionActivity.this.sessionId)) + "\n";
+
+						res_periods = db.getAllPeriods(res.getInt(0));
+						res_periods.moveToFirst();
+
+						while (!res_periods.isAfterLast())
+						{
+
+							Date d1;
+							try
+							{
+								d1 = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.FRANCE).parse(res_periods.getString(2));
+							}
+							catch (ParseException e)
+							{
+								d1 = new Date();
+								e.printStackTrace();
+							}
+							Date d2 = new Date();
+							try
+							{
+								if (res_periods.getInt(4) != -1)
+									d2 = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.FRANCE).parse(res_periods.getString(3));
+							}
+							catch (ParseException e)
+							{
+								d2 = new Date();
+								e.printStackTrace();
+							}
+
+							long duration = d2.getTime() - d1.getTime();
+
+							long diffInSeconds = TimeUnit.MILLISECONDS.toSeconds(duration);
+
+							content += "    + " + sdf.format(d1).toString() + " -- " + sdf.format(d2).toString() + " --> " + MyTimer.splitToComponentTimes((int) diffInSeconds) + "\n";
+
+							res_periods.moveToNext();
+						}
+						res.moveToNext();
+					}
 				}
 
 				Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", value.toString(), null));

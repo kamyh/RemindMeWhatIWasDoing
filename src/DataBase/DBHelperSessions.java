@@ -545,4 +545,12 @@ public class DBHelperSessions extends SQLiteOpenHelper
 		args.put("updated_at", currentDateandTime);
 		db.update("sessions", args, strFilter, null);
 	}
+
+	public Cursor getAllPeriods(int task_id)
+	{
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		Cursor res = db.rawQuery("select * from periods where id_task=" + task_id, null);
+		return res;
+	}
 }
