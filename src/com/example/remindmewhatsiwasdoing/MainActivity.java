@@ -25,7 +25,7 @@ public class MainActivity extends ActionBarActivity
 		// DBHelperSessions db = new DBHelperSessions(this);
 		// db.removeAllTask();
 		// db.removeAllSession();
-		//this.deleteDatabase("RemindMeWhatIWasDoing.db");
+		// this.deleteDatabase("RemindMeWhatIWasDoing.db");
 
 		btn_sessions.setOnClickListener(new View.OnClickListener()
 		{
@@ -79,7 +79,7 @@ public class MainActivity extends ActionBarActivity
 
 	private void btnAboutClicked()
 	{
-		Intent i = new Intent(MainActivity.this, TestActivity.class);
+		Intent i = new Intent(MainActivity.this, AboutActivity.class);
 		startActivity(i);
 	}
 

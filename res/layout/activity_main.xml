@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_centerVertical="true"
     android:background="#333333"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -9,51 +10,86 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
 
-    <Button
-        android:id="@+id/btn_sessions"
+    <LinearLayout
+        android:id="@+id/LinearLayout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="78dp"
-        android:text="@string/Sessions"
-        android:textColor="#FFFFFF" />
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical"
+        android:gravity="center_vertical"
+        android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/btn_options"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/btn_sessions"
-        android:layout_below="@+id/btn_sessions"
-        android:text="@string/options"
-        android:textColor="#FFFFFF" />
+        <LinearLayout
+            android:id="@+id/linearfirst"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
 
-    <Button
-        android:id="@+id/btn_about"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/btn_options"
-        android:layout_below="@+id/btn_options"
-        android:text="@string/about"
-        android:textColor="#FFFFFF" />
+            <Button
+                android:id="@+id/btn_sessions"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="1dp"
+                android:layout_weight="1"
+                android:background="#34495e"
+                android:padding="8dp"
+                android:text="@string/Sessions"
+                android:textColor="#bdc3c7" />
+
+            <Button
+                android:id="@+id/btn_options"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="1dp"
+                android:layout_weight="1"
+                android:background="#34495e"
+                android:padding="8dp"
+                android:text="@string/options"
+                android:textColor="#bdc3c7" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:layout_weight="1"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/btn_about"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="1dp"
+                android:layout_weight="1"
+                android:background="#34495e"
+                android:padding="8dp"
+                android:text="@string/about"
+                android:textColor="#bdc3c7" />
+
+            <Button
+                android:id="@+id/btn"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="1dp"
+                android:layout_weight="1"
+                android:background="#34495e"
+                android:padding="8dp"
+                android:text=" "
+                android:textColor="#bdc3c7" />
+        </LinearLayout>
+    </LinearLayout>
 
     <TextView
-        android:id="@+id/copyrights"
+        android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="@string/copiright"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
-
-    <Button
-        android:id="@+id/btn_test"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/btn_about"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="17dp"
-        android:text="Button"
-        android:textColor="#FFFFFF" />
+        android:text="Copiright - Deruaz Vincent - 2014"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="#95a5a6" />
 
 </RelativeLayout>

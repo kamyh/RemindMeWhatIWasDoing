@@ -18,78 +18,6 @@ public class AboutActivity extends ActionBarActivity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_about);
-		this.timer = new MyTimer("test");
-		this.timer.start();
-		this.timer.suspend();
-
-		final Button btn_start_timer = (Button) findViewById(R.id.btn_start_timer);
-		final Button btn_stop_timer = (Button) findViewById(R.id.btn_stop_timer);
-
-		this.tv_timer_display = (TextView) findViewById(R.id.textView_display);
-
-		btn_start_timer.setOnClickListener(new View.OnClickListener()
-		{
-
-			@Override
-			public void onClick(View v)
-			{
-				btn_start_timer_clicked();
-			}
-
-		});
-
-		btn_stop_timer.setOnClickListener(new View.OnClickListener()
-		{
-
-			@Override
-			public void onClick(View v)
-			{
-				btn_stop_timer_clicked();
-			}
-
-		});
-
-		Thread t = new Thread()
-		{
-
-			@Override
-			public void run()
-			{
-				try
-				{
-					while (!isInterrupted())
-					{
-						Thread.sleep(1000);
-						runOnUiThread(new Runnable()
-						{
-							@Override
-							public void run()
-							{
-								AboutActivity.this.tv_timer_display.setText(Integer.toString(timer.getElapsedTimeSec()));
-							}
-						});
-					}
-				}
-				catch (InterruptedException e)
-				{
-				}
-			}
-		};
-
-		t.start();
-
-	}
-
-	protected void btn_stop_timer_clicked()
-	{
-		this.timer.suspend();
-		System.out.println(this.timer.getElapsedTimeSec());
-
-	}
-
-	private void btn_start_timer_clicked()
-	{
-		this.timer.resume();
 
 	}
 
@@ -119,6 +47,4 @@ public class AboutActivity extends ActionBarActivity
 	 * INPUTS
 	 */
 
-	private MyTimer timer;
-	private TextView tv_timer_display;
 }

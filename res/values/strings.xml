@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">RemindMeWhatsIWasDoing</string>
+    <string name="app_name">RemindMeWhatIWasDoing</string>
     <string name="send">Send</string>
     <string name="status_session_stop">Pause</string>
     <string name="status_session_start">Start</string>
@@ -43,5 +43,8 @@
     <string name="btnSendMailString">Send</string>
     <string name="stringFirstLastName">Firstname/Lastname</string>
     <string name="stringMailAdresse">Mail Adresse</string>
+    <string name="string_reset_data">Reset Data</string>
+    <string name="about_part_1">"Application to record activity/task to realise performances report."</string>
+    <string name="about_part_2">Originally created during a mobile developpement course during my studies.</string>
 
 </resources>

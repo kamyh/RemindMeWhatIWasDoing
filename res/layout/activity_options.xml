@@ -9,45 +9,83 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.remindmewhatsiwasdoing.OptionsActivity" >
 
-    <TableLayout
+    <LinearLayout
+        android:id="@+id/LinearLayout1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true" >
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical"
+        android:gravity="center_vertical"
+        android:orientation="vertical" >
 
-        <TableRow
-            android:id="@+id/tableRow1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+        <LinearLayout
+            android:id="@+id/linearfirst"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
 
             <Button
                 android:id="@+id/btn_reset_session"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/remove_all_session"
-                android:textColor="#FFFFFF" />
+                android:layout_marginRight="1dp"
+                android:layout_weight="1"
+                android:background="#34495e"
+                android:padding="8dp"
+                android:text="@string/string_reset_data"
+                android:textColor="#bdc3c7" />
 
-        </TableRow>
+            <Button
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="1dp"
+                android:layout_weight="1"
+                android:background="#34495e"
+                android:padding="8dp"
+                android:text=""
+                android:textColor="#bdc3c7" />
+        </LinearLayout>
 
-        <TableRow
-            android:id="@+id/tableRow2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:layout_weight="1"
+            android:orientation="horizontal" >
 
-        </TableRow>
+            <Button
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="1dp"
+                android:layout_weight="1"
+                android:background="#34495e"
+                android:padding="8dp"
+                android:text=""
+                android:textColor="#bdc3c7" />
 
-        <TableRow
-            android:id="@+id/tableRow3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+            <Button
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="1dp"
+                android:layout_weight="1"
+                android:background="#34495e"
+                android:padding="8dp"
+                android:text=""
+                android:textColor="#bdc3c7" />
+        </LinearLayout>
+    </LinearLayout>
 
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-        </TableRow>
-    </TableLayout>
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="Copiright - Deruaz Vincent - 2014"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="#95a5a6" />
 
 </RelativeLayout>
