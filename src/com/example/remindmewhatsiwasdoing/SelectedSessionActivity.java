@@ -30,6 +30,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -442,6 +443,15 @@ public class SelectedSessionActivity extends ActionBarActivity implements Locati
 			{
 				taskNameDisplay += "...   ";
 			}
+			else
+			{
+				taskNameDisplay += "                                                                                  ";
+				while (paint.measureText(taskNameDisplay, 0, taskNameDisplay.length()) > (widthScreen * 0.2))
+				{
+					taskNameDisplay = taskNameDisplay.substring(0, taskNameDisplay.length() - 1);
+				}
+				taskNameDisplay += "      ";
+			}
 			labelTaskNameString.setText(taskNameDisplay);
 			labelTaskNameString.setPadding(2, 0, 5, 0);
 			labelTaskNameString.setTextColor(Color.WHITE);
@@ -542,6 +552,7 @@ public class SelectedSessionActivity extends ActionBarActivity implements Locati
 
 			// geotag btn
 			ImageView imageBtnGeoTag = new ImageView(this);
+
 			if (!this.db.isGeoTagged(task_id))
 			{
 				imageBtnGeoTag.setImageResource(R.drawable.ic_geo_red);
