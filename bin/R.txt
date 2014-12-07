@@ -236,10 +236,13 @@ int drawable abc_textfield_searchview_right_holo_dark 0x7f020055
 int drawable abc_textfield_searchview_right_holo_light 0x7f020056
 int drawable ic_action 0x7f020057
 int drawable ic_cross 0x7f020058
-int drawable ic_launcher 0x7f020059
-int drawable ic_pause 0x7f02005a
-int drawable ic_play 0x7f02005b
-int drawable ic_task 0x7f02005c
+int drawable ic_geo 0x7f020059
+int drawable ic_geo_green 0x7f02005a
+int drawable ic_geo_red 0x7f02005b
+int drawable ic_launcher 0x7f02005c
+int drawable ic_pause 0x7f02005d
+int drawable ic_play 0x7f02005e
+int drawable ic_task 0x7f02005f
 int id LinearLayout1 0x7f05003e
 int id TextView01 0x7f05003d
 int id action_bar 0x7f05001c

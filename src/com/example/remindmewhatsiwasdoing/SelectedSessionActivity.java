@@ -9,18 +9,24 @@ import java.util.concurrent.TimeUnit;
 
 import DataBase.DBHelperSessions;
 import Model.Task;
+import Tools.GPS;
 import Tools.MyTimer;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -44,7 +50,7 @@ import android.widget.ToggleButton;
 //TODO task name unique for each session
 //TODO if delete session delete task/periodss
 
-public class SelectedSessionActivity extends ActionBarActivity
+public class SelectedSessionActivity extends ActionBarActivity implements LocationListener
 {
 
 	private Bundle b;
@@ -55,6 +61,7 @@ public class SelectedSessionActivity extends ActionBarActivity
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.activity_selected_session);
 
 		this.listTask = new ArrayMap<String, Task>();
@@ -426,12 +433,12 @@ public class SelectedSessionActivity extends ActionBarActivity
 			paint.setTextSize(labelTaskNameString.getTextSize());
 
 			boolean cut = false;
-			while (paint.measureText(taskNameDisplay, 0, taskNameDisplay.length()) > (widthScreen * 0.3))
+			while (paint.measureText(taskNameDisplay, 0, taskNameDisplay.length()) > (widthScreen * 0.2))
 			{
 				taskNameDisplay = taskNameDisplay.substring(0, taskNameDisplay.length() - 1);
 				cut = true;
 			}
-			if(cut)
+			if (cut)
 			{
 				taskNameDisplay += "...   ";
 			}
@@ -528,6 +535,34 @@ public class SelectedSessionActivity extends ActionBarActivity
 			labelTimer.setTextColor(Color.WHITE);
 			tr.addView(labelTimer);
 
+			TextView gap_4 = new TextView(this);
+			gap_4.setText("---");
+			gap_4.setTextColor(Color.rgb(127, 140, 141));
+			tr.addView(gap_4);
+
+			// geotag btn
+			ImageView imageBtnGeoTag = new ImageView(this);
+			if (!this.db.isGeoTagged(task_id))
+			{
+				imageBtnGeoTag.setImageResource(R.drawable.ic_geo_red);
+			}
+			else
+			{
+				imageBtnGeoTag.setImageResource(R.drawable.ic_geo_green);
+			}
+			imageBtnGeoTag.setId(task_id);
+
+			imageBtnGeoTag.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					geoLocalisationClicked(v);
+				}
+			});
+
+			tr.addView(imageBtnGeoTag);
+
 			// TODO remove in removale fct
 			dicoTimerLabel.put(labelTimer, listTask.get(taskName).getTimer());
 
@@ -579,6 +614,26 @@ public class SelectedSessionActivity extends ActionBarActivity
 	public void onResume()
 	{
 		super.onResume();
+		// Obtention de la référence du service
+		locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+
+		// Si le GPS est disponible, on s'y abonne
+		if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+		{
+			System.out.println("GPS_PROVIDER");
+			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, this);
+		}
+		if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
+		{
+			System.out.println("NETWORK_PROVIDER");
+			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+		}
+		if (locationManager.isProviderEnabled(LocationManager.PASSIVE_PROVIDER))
+		{
+			System.out.println("PASSIVE_PROVIDER");
+			locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, this);
+		}
+
 		fillView();
 
 	}
@@ -589,7 +644,47 @@ public class SelectedSessionActivity extends ActionBarActivity
 
 		super.onPause();
 		System.out.println("FINISH");
+	}
 
+	@Override
+	public void onLocationChanged(Location location)
+	{
+		this.gps = location;
+	}
+
+	@Override
+	public void onProviderDisabled(String provider)
+	{
+		locationManager.removeUpdates(this);
+	}
+
+	@Override
+	public void onProviderEnabled(String provider)
+	{
+		locationManager.requestLocationUpdates(provider, 5000, 10, this);
+	}
+
+	@Override
+	public void onStatusChanged(String provider, int status, Bundle extras)
+	{
+
+	}
+
+	private void geoLocalisationClicked(View v)
+	{
+		if (this.gps != null)
+		{
+			int s = 0;
+			View row = (View) v.getParent();
+			s = row.getId();
+
+			DBHelperSessions db = new DBHelperSessions(SelectedSessionActivity.this);
+			String tag = this.gps.getLatitude() + "-" + this.gps.getLongitude() + "-" + this.gps.getAltitude();
+			db.setGeoTag(s, tag);
+			Log.d("geoTag ", tag);
+			isModified();
+			fillView();
+		}
 	}
 
 	/*
@@ -601,4 +696,7 @@ public class SelectedSessionActivity extends ActionBarActivity
 	private Runnable runnable;
 	private final DBHelperSessions db = new DBHelperSessions(this);
 	private boolean isPaused;
+	private LocationManager locationManager;
+	private Location gps;
+
 }

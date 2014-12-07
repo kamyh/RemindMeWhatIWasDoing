@@ -34,6 +34,7 @@ public class DBHelperSessions extends SQLiteOpenHelper
 	public static final String TASK_COLUMN_DESCRIPTION = "description";
 	public static final String TASK_COLUMN_LOCATION = "location";
 	public static final String TASK_COLUMN_ELAPSED = "elapsed";
+	public static final String TASK_COLUMN_GEO_TAG = "geo_tag";
 
 	public static final String PERIOD_TABLE_NAME = "periods";
 	public static final String PERIOD_COLUMN_ID = "id";
@@ -52,7 +53,8 @@ public class DBHelperSessions extends SQLiteOpenHelper
 		// TODO Auto-generated method stub
 
 		db.execSQL("create table sessions " + "(id integer primary key, name text,created_at text, updated_at text,paused integer default 0)");
-		db.execSQL("create table tasks " + "(id integer primary key, name text, id_session integer, description text, location text,elapsed integer default 0,restart integer default 0)");
+		db.execSQL("create table tasks "
+				+ "(id integer primary key, name text, id_session integer, description text, location text,elapsed integer default 0,restart integer default 0,geo_tag text default '')");
 		db.execSQL("create table periods " + "(id integer primary key, id_task integer, started_at text, stoped_at text, closed integer default -1)");
 	}
 
@@ -552,5 +554,44 @@ public class DBHelperSessions extends SQLiteOpenHelper
 
 		Cursor res = db.rawQuery("select * from periods where id_task=" + task_id, null);
 		return res;
+	}
+
+	public void setGeoTag(int id, String tag)
+	{
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		String strFilter = "id=" + id;
+		ContentValues args = new ContentValues();
+		args.put("geo_tag", tag);
+		db.update("tasks", args, strFilter, null);
+	}
+
+	public boolean isGeoTagged(int task_id)
+	{
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		Cursor res = db.rawQuery("select * from tasks where id=" + task_id, null);
+
+		if (res.getCount() > 0)
+		{
+			if (res != null)
+			{
+				res.moveToLast();
+
+				if (res.getString(7).length() < 1)
+				{
+					return false;
+				}
+				else
+				{
+					return true;
+				}
+			}
+		}
+		else
+		{
+			return false;
+		}
+		return false;
 	}
 }

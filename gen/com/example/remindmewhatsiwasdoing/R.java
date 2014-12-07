@@ -1079,10 +1079,13 @@ containing a value of this type.
         public static final int abc_textfield_searchview_right_holo_light=0x7f020056;
         public static final int ic_action=0x7f020057;
         public static final int ic_cross=0x7f020058;
-        public static final int ic_launcher=0x7f020059;
-        public static final int ic_pause=0x7f02005a;
-        public static final int ic_play=0x7f02005b;
-        public static final int ic_task=0x7f02005c;
+        public static final int ic_geo=0x7f020059;
+        public static final int ic_geo_green=0x7f02005a;
+        public static final int ic_geo_red=0x7f02005b;
+        public static final int ic_launcher=0x7f02005c;
+        public static final int ic_pause=0x7f02005d;
+        public static final int ic_play=0x7f02005e;
+        public static final int ic_task=0x7f02005f;
     }
     public static final class id {
         public static final int LinearLayout1=0x7f05003e;
