@@ -1251,12 +1251,13 @@ containing a value of this type.
         public static final int main=0x7f0c0003;
         public static final int menu=0x7f0c0004;
         public static final int options=0x7f0c0005;
-        public static final int selected_session=0x7f0c0006;
-        public static final int session_creation=0x7f0c0007;
-        public static final int sessions=0x7f0c0008;
-        public static final int share=0x7f0c0009;
-        public static final int task_creation=0x7f0c000a;
-        public static final int test=0x7f0c000b;
+        public static final int pictures=0x7f0c0006;
+        public static final int selected_session=0x7f0c0007;
+        public static final int session_creation=0x7f0c0008;
+        public static final int sessions=0x7f0c0009;
+        public static final int share=0x7f0c000a;
+        public static final int task_creation=0x7f0c000b;
+        public static final int test=0x7f0c000c;
     }
     public static final class string {
         public static final int E_mail=0x7f0a0028;
@@ -1336,6 +1337,7 @@ containing a value of this type.
         public static final int title_activity_mail=0x7f0a0033;
         public static final int title_activity_main=0x7f0a002a;
         public static final int title_activity_options=0x7f0a0019;
+        public static final int title_activity_pictures=0x7f0a003a;
         public static final int title_activity_selected_session=0x7f0a001b;
         public static final int title_activity_session_creation=0x7f0a001f;
         public static final int title_activity_sessions=0x7f0a0018;

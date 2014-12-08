@@ -42,6 +42,11 @@ public class DBHelperSessions extends SQLiteOpenHelper
 	public static final String PERIOD_COLUMN_STOP_AT = "stoped_at";
 	public static final String PERIOD_COLUMN_ID_TASK = "id_task";
 
+	public static final String PICTURES_TABLE_NAME = "pictures";
+	public static final String PICTURES_COLUMN_ID = "id";
+	public static final String PICTURES_COLUMN_ID_TASK = "id_task";
+	public static final String PICTURES_COLUMN_PATH = "path";
+
 	public DBHelperSessions(Context context)
 	{
 		super(context, DATABASE_NAME, null, 2);
@@ -56,6 +61,7 @@ public class DBHelperSessions extends SQLiteOpenHelper
 		db.execSQL("create table tasks "
 				+ "(id integer primary key, name text, id_session integer, description text, location text,elapsed integer default 0,restart integer default 0,geo_tag text default '')");
 		db.execSQL("create table periods " + "(id integer primary key, id_task integer, started_at text, stoped_at text, closed integer default -1)");
+		db.execSQL("create table pictures " + "(id integer primary key, id_task integer, path text)");
 	}
 
 	@Override
@@ -65,6 +71,7 @@ public class DBHelperSessions extends SQLiteOpenHelper
 		db.execSQL("DROP TABLE IF EXISTS sessions");
 		db.execSQL("DROP TABLE IF EXISTS tasks");
 		db.execSQL("DROP TABLE IF EXISTS periods");
+		db.execSQL("DROP TABLE IF EXISTS pictures");
 		onCreate(db);
 	}
 
@@ -81,6 +88,18 @@ public class DBHelperSessions extends SQLiteOpenHelper
 		contentValues.put("updated_at", currentDateandTime);
 
 		db.insert("sessions", null, contentValues);
+		return true;
+	}
+
+	public boolean insertPathPictures(String idTask, String path)
+	{
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues contentValues = new ContentValues();
+
+		contentValues.put("id_task", idTask);
+		contentValues.put("path", path);
+
+		db.insert("pictures", null, contentValues);
 		return true;
 	}
 
@@ -594,4 +613,6 @@ public class DBHelperSessions extends SQLiteOpenHelper
 		}
 		return false;
 	}
+
+	
 }

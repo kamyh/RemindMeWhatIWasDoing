@@ -46,5 +46,6 @@
     <string name="string_reset_data">Reset Data</string>
     <string name="about_part_1">"Application to record activity/task to realise performances report."</string>
     <string name="about_part_2">Originally created during a mobile developpement course during my studies.</string>
+    <string name="title_activity_pictures">PicturesActivity</string>
 
 </resources>

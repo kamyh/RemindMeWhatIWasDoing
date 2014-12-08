@@ -378,12 +378,13 @@ int menu mail 0x7f0c0002
 int menu main 0x7f0c0003
 int menu menu 0x7f0c0004
 int menu options 0x7f0c0005
-int menu selected_session 0x7f0c0006
-int menu session_creation 0x7f0c0007
-int menu sessions 0x7f0c0008
-int menu share 0x7f0c0009
-int menu task_creation 0x7f0c000a
-int menu test 0x7f0c000b
+int menu pictures 0x7f0c0006
+int menu selected_session 0x7f0c0007
+int menu session_creation 0x7f0c0008
+int menu sessions 0x7f0c0009
+int menu share 0x7f0c000a
+int menu task_creation 0x7f0c000b
+int menu test 0x7f0c000c
 int string E_mail 0x7f0a0028
 int string New_Task 0x7f0a002d
 int string Sessions 0x7f0a0015
@@ -434,6 +435,7 @@ int string title_activity_logs 0x7f0a001e
 int string title_activity_mail 0x7f0a0033
 int string title_activity_main 0x7f0a002a
 int string title_activity_options 0x7f0a0019
+int string title_activity_pictures 0x7f0a003a
 int string title_activity_selected_session 0x7f0a001b
 int string title_activity_session_creation 0x7f0a001f
 int string title_activity_sessions 0x7f0a0018
