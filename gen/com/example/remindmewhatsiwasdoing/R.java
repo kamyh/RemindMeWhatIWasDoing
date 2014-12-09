@@ -1091,6 +1091,7 @@ containing a value of this type.
     public static final class id {
         public static final int LinearLayout1=0x7f05003e;
         public static final int LinearLayout_info=0x7f05005f;
+        public static final int TableLayout_periods=0x7f050062;
         public static final int TextView01=0x7f05003d;
         public static final int action_bar=0x7f05001c;
         public static final int action_bar_activity_content=0x7f050015;
@@ -1103,7 +1104,7 @@ containing a value of this type.
         public static final int action_menu_divider=0x7f050016;
         public static final int action_menu_presenter=0x7f050017;
         public static final int action_mode_close_button=0x7f050024;
-        public static final int action_settings=0x7f050062;
+        public static final int action_settings=0x7f050065;
         public static final int activity_chooser_view_content=0x7f050025;
         public static final int always=0x7f05000b;
         public static final int beginning=0x7f050011;
@@ -1158,6 +1159,7 @@ containing a value of this type.
         public static final int progress_horizontal=0x7f050019;
         public static final int radio=0x7f05002f;
         public static final int scrollView_content=0x7f050046;
+        public static final int scrollView_periods=0x7f050061;
         public static final int search_badge=0x7f050032;
         public static final int search_bar=0x7f050031;
         public static final int search_button=0x7f050033;
@@ -1179,11 +1181,12 @@ containing a value of this type.
         public static final int tableRow1=0x7f05004c;
         public static final int tableRow2=0x7f05004f;
         public static final int tableRow4=0x7f050052;
-        public static final int table_pictures=0x7f050061;
+        public static final int table_pictures=0x7f050064;
         public static final int task_name=0x7f05005e;
         public static final int textView1=0x7f05003c;
         public static final int textView_display=0x7f05004d;
         public static final int title=0x7f05002b;
+        public static final int title_img=0x7f050063;
         public static final int top_action_bar=0x7f050020;
         public static final int up=0x7f050021;
         public static final int useLogo=0x7f050003;
@@ -1354,6 +1357,7 @@ containing a value of this type.
         public static final int title_activity_task_creation=0x7f0a001c;
         public static final int title_activity_task_viewer=0x7f0a003b;
         public static final int title_activity_test=0x7f0a0032;
+        public static final int title_pics=0x7f0a003c;
         public static final int txtBtnNewSession=0x7f0a0026;
         public static final int validate=0x7f0a0027;
     }

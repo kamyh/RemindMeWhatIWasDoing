@@ -30,6 +30,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.MergeCursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -71,6 +72,8 @@ public class TaskViewerActivity extends ActionBarActivity
 
 	private int screenWidth;
 
+	private int density;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -79,6 +82,7 @@ public class TaskViewerActivity extends ActionBarActivity
 
 		DisplayMetrics metrics = this.getResources().getDisplayMetrics();
 		screenWidth = metrics.widthPixels;
+		this.density = metrics.densityDpi;
 
 		setContentView(R.layout.activity_task_viewer);
 
@@ -115,7 +119,7 @@ public class TaskViewerActivity extends ActionBarActivity
 			final int REQUIRED_HIGHT = HIGHT;
 			int scale = 1;
 			while (o.outWidth / scale / 2 >= REQUIRED_WIDTH && o.outHeight / scale / 2 >= REQUIRED_HIGHT)
-				scale *= 1.1;
+				scale += 1;
 
 			BitmapFactory.Options o2 = new BitmapFactory.Options();
 			o2.inSampleSize = scale;
@@ -130,9 +134,93 @@ public class TaskViewerActivity extends ActionBarActivity
 
 	private void fillView()
 	{
+		TableLayout content = (TableLayout) findViewById(R.id.TableLayout_periods);
+		Cursor periods = this.db.getAllPeriods(this.id);
+		SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy HH:mm:ss", Locale.FRANCE);
+
+		System.out.println("+++++-----> " + periods.getCount());
+
+		periods.moveToFirst();
+
+		while (!periods.isAfterLast())
+		{
+			System.out.println("&&&&&&&&&&&&&&");
+			TableRow row = new TableRow(this);
+			TableRow row_2 = new TableRow(this);
+			TextView started_at = new TextView(this);
+			TextView ended_at = new TextView(this);
+			TextView duration_label = new TextView(this);
+
+			row.setBackgroundColor(Color.rgb(127, 140, 141));
+			row.setPadding(8, 28, 8, 28);
+			row_2.setBackgroundColor(Color.rgb(127, 140, 141));
+			row_2.setPadding(8, 28, 8, 28);
+
+			started_at.setTextColor(Color.WHITE);
+			ended_at.setTextColor(Color.WHITE);
+			duration_label.setTextColor(Color.WHITE);
+
+			Date d1;
+			try
+			{
+				d1 = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.FRANCE).parse(periods.getString(2));
+			}
+			catch (ParseException e)
+			{
+				d1 = new Date();
+				e.printStackTrace();
+			}
+			Date d2 = new Date();
+			try
+			{
+				if (periods.getInt(4) != -1)
+					d2 = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.FRANCE).parse(periods.getString(3));
+			}
+			catch (ParseException e)
+			{
+				e.printStackTrace();
+			}
+
+			long duration = d2.getTime() - d1.getTime();
+			long diffInSeconds = TimeUnit.MILLISECONDS.toSeconds(duration);
+
+			started_at.setText(sdf.format(d1).toString());
+			ended_at.setText(sdf.format(d2).toString());
+			duration_label.setText(MyTimer.splitToComponentTimes((int) diffInSeconds));
+
+			row.addView(started_at);
+			row_2.addView(ended_at);
+			// Gap
+			TextView gap = new TextView(this);
+			gap.setText("-----");
+			gap.setTextColor(Color.rgb(127, 140, 141));
+			row.addView(gap);
+			row.addView(duration_label);
+
+			content.addView(row);
+			content.addView(row_2);
+
+			View line = new View(this);
+			line.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, 1));
+			line.setBackgroundColor(Color.rgb(51, 51, 51));
+			content.addView(line);
+
+			periods.moveToNext();
+		}
+
+		loadPics();
+	}
+
+	private void loadPics()
+	{
 		TableLayout content = (TableLayout) findViewById(R.id.table_pictures);
 		int index = 0;
 		TableRow row = new TableRow(this);
+		row.setGravity(Gravity.CENTER);
+		TableLayout.LayoutParams lp = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);
+
+		lp.setMargins(10, 10, 10, 10);
+		row.setLayoutParams(lp);
 		content.addView(row);
 
 		for (String path : this.db.getPictures(this.id + ""))
@@ -148,19 +236,24 @@ public class TaskViewerActivity extends ActionBarActivity
 				ImageView imageView = new ImageView(this);
 
 				System.out.println(this.screenWidth);
+				System.out.println(this.density);
 
 				// TODO pixels ? cm ???
-				int widthScaled = this.screenWidth / 6;
-				imageView.setImageBitmap(decodeFile(image.getAbsolutePath(), widthScaled, 10));
+				int widthScaled = (int) (this.screenWidth / 3 / 3);
+				imageView.setImageBitmap(decodeFile(image.getAbsolutePath(), widthScaled, widthScaled));
+				imageView.setPadding(10, 10, 10, 10);
 				row.addView(imageView);
 			}
+			if (index % 3 == 0)
+			{
+				row = new TableRow(this);
+				row.setGravity(Gravity.CENTER);
+				lp = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);
 
-		}
-
-		if (index % 3 == 0)
-		{
-			row = new TableRow(this);
-			content.addView(row);
+				lp.setMargins(10, 10, 10, 10);
+				row.setLayoutParams(lp);
+				content.addView(row);
+			}
 		}
 	}
 
