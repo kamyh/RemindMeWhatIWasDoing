@@ -61,11 +61,6 @@ import android.widget.ToggleButton;
 public class SelectedSessionActivity extends ActionBarActivity implements LocationListener
 {
 
-	private Bundle b;
-	private String sessionName;
-	private String sessionId;
-	private String task_id_pictures;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -73,14 +68,6 @@ public class SelectedSessionActivity extends ActionBarActivity implements Locati
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
 		setContentView(R.layout.activity_selected_session);
-
-		// Checking camera availability
-		if (!isDeviceSupportCamera())
-		{
-			Toast.makeText(getApplicationContext(), "Sorry! Your device doesn't support camera", Toast.LENGTH_LONG).show();
-			// will close the app if the device does't have camera
-			finish();
-		}
 
 		this.listTask = new ArrayMap<String, Task>();
 
@@ -440,8 +427,10 @@ public class SelectedSessionActivity extends ActionBarActivity implements Locati
 				{
 					String s = "";
 					View row = (View) v.getParent();
-					s = row.getId() + "";
-					captureImage(s);
+
+					Intent i = new Intent(SelectedSessionActivity.this, TaskViewerActivity.class);
+					i.putExtra("ID", row.getId());
+					startActivity(i);
 				}
 			});
 
@@ -731,101 +720,6 @@ public class SelectedSessionActivity extends ActionBarActivity implements Locati
 		}
 	}
 
-	/**
-	 * Checking device has camera hardware or not
-	 * */
-	private boolean isDeviceSupportCamera()
-	{
-		if (getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA))
-		{
-			// this device has a camera
-			return true;
-		}
-		else
-		{
-			// no camera on this device
-			return false;
-		}
-	}
-
-	/**
-	 * Capturing Camera Image will lauch camera app requrest image capture
-	 */
-	private void captureImage(String task_id)
-	{
-		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-		fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
-
-		intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-		this.task_id_pictures = task_id;
-
-		// start the image capture Intent
-		startActivityForResult(intent, CAMERA_CAPTURE_IMAGE_REQUEST_CODE);
-	}
-
-	public Uri getOutputMediaFileUri(int type)
-	{
-		return Uri.fromFile(getOutputMediaFile(type));
-	}
-
-	private static File getOutputMediaFile(int type)
-	{
-
-		// External sdcard location
-		File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), IMAGE_DIRECTORY_NAME);
-
-		// Create the storage directory if it does not exist
-		if (!mediaStorageDir.exists())
-		{
-			if (!mediaStorageDir.mkdirs())
-			{
-				Log.d(IMAGE_DIRECTORY_NAME, "Oops! Failed create " + IMAGE_DIRECTORY_NAME + " directory");
-				return null;
-			}
-		}
-
-		// Create a media file name
-		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-		File mediaFile;
-		if (type == MEDIA_TYPE_IMAGE)
-		{
-			mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg");
-		}
-		else
-		{
-			return null;
-		}
-
-		return mediaFile;
-	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data)
-	{
-		// if the result is capturing Image
-		if (requestCode == CAMERA_CAPTURE_IMAGE_REQUEST_CODE)
-		{
-			if (resultCode == RESULT_OK)
-			{
-				// successfully captured the image
-				// TODO store path in DB fileUri.getPath()
-				Log.d("*** ", this.task_id_pictures);
-				this.db.insertPathPictures("", fileUri.getPath());
-			}
-			else if (resultCode == RESULT_CANCELED)
-			{
-				// user cancelled Image capture
-				Toast.makeText(getApplicationContext(), "User cancelled image capture", Toast.LENGTH_SHORT).show();
-			}
-			else
-			{
-				// failed to capture image
-				Toast.makeText(getApplicationContext(), "Sorry! Failed to capture image", Toast.LENGTH_SHORT).show();
-			}
-		}
-	}
-
 	/*
 	 * INPUTS
 	 */
@@ -837,9 +731,8 @@ public class SelectedSessionActivity extends ActionBarActivity implements Locati
 	private boolean isPaused;
 	private LocationManager locationManager;
 	private Location gps;
-	private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE = 100;
-	public static final int MEDIA_TYPE_IMAGE = 1;
-	private static final String IMAGE_DIRECTORY_NAME = "remind_me";
-	private Uri fileUri; // file url to store image/video
+	private Bundle b;
+	private String sessionName;
+	private String sessionId;
 
 }

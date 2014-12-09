@@ -165,6 +165,30 @@ public class DBHelperSessions extends SQLiteOpenHelper
 		return res;
 	}
 
+	public ArrayList<String> getPictures(String id_task)
+	{
+		ArrayList<String> res = new ArrayList<String>();
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cur = db.rawQuery("select * from pictures where id_task=" + id_task, null);
+
+		System.out.println("select * from pictures where id_task=" + id_task);
+		System.out.println(cur.getCount());
+
+		if (cur != null)
+		{
+			cur.moveToFirst();
+
+			while (!cur.isAfterLast())
+			{
+				res.add(cur.getString(2));
+				System.out.println(cur.getString(2));
+				cur.moveToNext();
+			}
+		}
+
+		return res;
+	}
+
 	public void resumeTasks()
 	{
 		Cursor res = getAllToRestartTask();
@@ -614,5 +638,4 @@ public class DBHelperSessions extends SQLiteOpenHelper
 		return false;
 	}
 
-	
 }
