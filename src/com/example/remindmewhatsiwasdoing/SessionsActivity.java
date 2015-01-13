@@ -1,28 +1,20 @@
 package com.example.remindmewhatsiwasdoing;
 
-import java.io.ObjectOutputStream.PutField;
 import java.util.ArrayList;
-import java.util.Currency;
-
 import DataBase.DBHelperSessions;
 import android.support.v7.app.ActionBarActivity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.view.ViewManager;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -35,7 +27,6 @@ public class SessionsActivity extends ActionBarActivity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_sessions);
-		this.dbHelpSession = new DBHelperSessions(this);
 
 		final Button btn_new_session = (Button) findViewById(R.id.btnNewSession);
 
@@ -67,12 +58,7 @@ public class SessionsActivity extends ActionBarActivity
 		Integer count = 0;
 		for (String sessionName : listSessions)
 		{
-			String sessionNameString = sessionName;// get the first
-			// variable
-			Double timeElapsed = 2.0;// get the
-										// second
-										// variable
-			// Create the table row
+			String sessionNameString = sessionName;
 			TableRow tr = new TableRow(this);
 
 			tr.setBackgroundColor(Color.rgb(127, 140, 141));
@@ -174,11 +160,6 @@ public class SessionsActivity extends ActionBarActivity
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -199,6 +180,4 @@ public class SessionsActivity extends ActionBarActivity
 	/*
 	 * INPUTS
 	 */
-
-	private DBHelperSessions dbHelpSession;
 }

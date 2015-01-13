@@ -1,29 +1,22 @@
 package com.example.remindmewhatsiwasdoing;
 
-import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
-
 import DataBase.DBHelperSessions;
 import Model.Task;
-import Tools.GPS;
 import Tools.MyTimer;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
-import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -32,31 +25,19 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
-import android.provider.MediaStore;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ToggleButton;
-
-//TODO close all db opened
-//TODO task name unique for each session
-//TODO if delete session delete task/periodss
-//TODO lock in portrait
 
 public class SelectedSessionActivity extends ActionBarActivity implements LocationListener
 {
@@ -77,6 +58,7 @@ public class SelectedSessionActivity extends ActionBarActivity implements Locati
 		if (b != null)
 		{
 			sessionId = (String) b.get("sessionID");
+			
 
 			DBHelperSessions db = new DBHelperSessions(this);
 			TextView tV = (TextView) findViewById(R.id.selectedSessionName);
@@ -88,6 +70,18 @@ public class SelectedSessionActivity extends ActionBarActivity implements Locati
 
 		this.isPaused = db.isSessionPaused(this.sessionId);
 
+		control();
+
+		dicoTimerLabel = new ArrayMap<TextView, MyTimer>();
+
+		setupGPS();
+
+		fillView();
+		initUpdaterTimerLabel();
+	}
+
+	private void control()
+	{
 		final Button btn_pause_session = (Button) findViewById(R.id.btnPauseSession);
 		if (this.isPaused)
 		{
@@ -144,11 +138,6 @@ public class SelectedSessionActivity extends ActionBarActivity implements Locati
 				isModified();
 			}
 		});
-
-		dicoTimerLabel = new ArrayMap<TextView, MyTimer>();
-
-		fillView();
-		initUpdaterTimerLabel();
 	}
 
 	private void isModified()
@@ -216,7 +205,7 @@ public class SelectedSessionActivity extends ActionBarActivity implements Locati
 				{
 					while (!res.isAfterLast())
 					{
-						content += res.getString(1) + " - " + res.getString(3) + " - " + res.getString(4) + " - "
+						content += res.getString(1) + " - " + res.getString(3) + " - " + res.getString(6) + " - "
 								+ MyTimer.splitToComponentTimes(SelectedSessionActivity.this.db.getElapsedTimeTask(res.getString(1), SelectedSessionActivity.this.sessionId)) + "\n";
 
 						res.moveToNext();
@@ -425,7 +414,6 @@ public class SelectedSessionActivity extends ActionBarActivity implements Locati
 				@Override
 				public void onClick(View v)
 				{
-					String s = "";
 					View row = (View) v.getParent();
 
 					Intent i = new Intent(SelectedSessionActivity.this, TaskViewerActivity.class);
@@ -536,7 +524,6 @@ public class SelectedSessionActivity extends ActionBarActivity implements Locati
 						{
 							listTask.get(taskName).getTimer().start();
 							listTask.get(taskName).getTimer().resume();
-							System.out.println("START");
 							DBHelperSessions db = new DBHelperSessions(SelectedSessionActivity.this);
 							db.insertPeriod(s + "");
 							((ImageView) v).setImageResource(R.drawable.ic_pause);
@@ -545,7 +532,6 @@ public class SelectedSessionActivity extends ActionBarActivity implements Locati
 						else
 						{
 							listTask.get(taskName).getTimer().suspend();
-							System.out.println("STOP");
 							DBHelperSessions db = new DBHelperSessions(SelectedSessionActivity.this);
 							db.updatePeriod(s + "");
 							((ImageView) v).setImageResource(R.drawable.ic_play);
@@ -596,10 +582,8 @@ public class SelectedSessionActivity extends ActionBarActivity implements Locati
 
 			tr.addView(imageBtnGeoTag);
 
-			// TODO remove in removale fct
 			dicoTimerLabel.put(labelTimer, listTask.get(taskName).getTimer());
 
-			// finally add this to the table row
 			linearLayout.addView(tr, new TableLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 
 			View line = new View(this);
@@ -613,11 +597,6 @@ public class SelectedSessionActivity extends ActionBarActivity implements Locati
 				task.getTimer().start();
 			}
 		}
-
-	}
-
-	private void resumeWithSessionPaused()
-	{
 
 	}
 
@@ -647,36 +626,37 @@ public class SelectedSessionActivity extends ActionBarActivity implements Locati
 	public void onResume()
 	{
 		super.onResume();
+		setupGPS();
+
+		fillView();
+
+	}
+
+	private void setupGPS()
+	{
 		// Obtention de la référence du service
 		locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
 
 		// Si le GPS est disponible, on s'y abonne
 		if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
 		{
-			System.out.println("GPS_PROVIDER");
 			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, this);
 		}
 		if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
 		{
-			System.out.println("NETWORK_PROVIDER");
 			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
 		}
 		if (locationManager.isProviderEnabled(LocationManager.PASSIVE_PROVIDER))
 		{
-			System.out.println("PASSIVE_PROVIDER");
 			locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, this);
 		}
-
-		fillView();
-
 	}
 
 	@Override
 	public void onPause()
 	{
-
 		super.onPause();
-		System.out.println("FINISH");
+		locationManager.removeUpdates(this);
 	}
 
 	@Override
@@ -714,7 +694,6 @@ public class SelectedSessionActivity extends ActionBarActivity implements Locati
 			DBHelperSessions db = new DBHelperSessions(SelectedSessionActivity.this);
 			String tag = this.gps.getLatitude() + "-" + this.gps.getLongitude() + "-" + this.gps.getAltitude();
 			db.setGeoTag(s, tag);
-			Log.d("geoTag ", tag);
 			isModified();
 			fillView();
 		}

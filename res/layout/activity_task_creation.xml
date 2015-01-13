@@ -62,13 +62,6 @@
             android:lines="@integer/lines_number_summary"
             android:textColor="#FFFFFF" />
 
-        <CheckBox
-            android:id="@+id/chkBoxLocation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/stringRecordLocation"
-            android:textColor="#FFFFFF" />
-
     </LinearLayout>
 
 </RelativeLayout>

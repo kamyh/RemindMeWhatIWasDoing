@@ -22,7 +22,6 @@ public class Task
 
 	public void setElapsedTime(int elapsedTimeTask)
 	{
-		System.out.println("elapsedTimeTask " + elapsedTimeTask);
 		this.timer.setSeconds(elapsedTimeTask);
 	}
 

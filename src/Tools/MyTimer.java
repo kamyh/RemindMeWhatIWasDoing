@@ -1,7 +1,5 @@
 package Tools;
 
-import android.widget.TextView;
-
 public class MyTimer implements Runnable
 {
 
@@ -16,7 +14,7 @@ public class MyTimer implements Runnable
 	{
 		return seconds;
 	}
-	
+
 	public String getElapsedTimeFormat()
 	{
 		return splitToComponentTimes(this.seconds);
@@ -31,8 +29,7 @@ public class MyTimer implements Runnable
 			{
 				Thread.sleep(1000);
 				seconds++;
-				
-				
+
 				synchronized (this)
 				{
 					while (suspended)
@@ -44,7 +41,6 @@ public class MyTimer implements Runnable
 						}
 						catch (InterruptedException e)
 						{
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
@@ -65,7 +61,6 @@ public class MyTimer implements Runnable
 
 	public void start()
 	{
-		System.out.println("Starting " + threadName);
 		if (t == null)
 		{
 			t = new Thread(this, threadName);
@@ -83,44 +78,26 @@ public class MyTimer implements Runnable
 		suspended = false;
 		notify();
 	}
-	
+
 	public static String splitToComponentTimes(int eTime)
 	{
-	    int hours = (int) eTime / 3600;
-	    int remainder = (int) eTime - hours * 3600;
-	    int mins = remainder / 60;
-	    remainder = remainder - mins * 60;
-	    int secs = remainder;
+		int hours = (int) eTime / 3600;
+		int remainder = (int) eTime - hours * 3600;
+		int mins = remainder / 60;
+		remainder = remainder - mins * 60;
+		int secs = remainder;
 
-	    return hours+":"+mins+":"+secs;
+		return hours + ":" + mins + ":" + secs;
 	}
 
-
-	public Thread t;
-	private int seconds;
-	private boolean suspended;
 	public boolean isSuspended()
 	{
 		return suspended;
 	}
 
-
+	public Thread t;
+	private int seconds;
+	private boolean suspended;
 	private String threadName;
-
-	public static void main(String args[])
-	{
-		MyTimer timer_1 = new MyTimer("timer_1");
-		timer_1.start();
-		try
-		{
-			Thread.sleep(5000);
-		}
-		catch (InterruptedException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.err.println(timer_1.seconds);
-	}
 
 }

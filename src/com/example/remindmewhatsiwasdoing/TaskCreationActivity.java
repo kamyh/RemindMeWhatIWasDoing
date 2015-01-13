@@ -1,7 +1,6 @@
 package com.example.remindmewhatsiwasdoing;
 
 import DataBase.DBHelperSessions;
-import Model.Session;
 import Model.Task;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -25,6 +24,7 @@ public class TaskCreationActivity extends ActionBarActivity
 
 		final Button btn_create_new_task = (Button) findViewById(R.id.btnCreateTask);
 		this.et_name_task = (EditText) findViewById(R.id.editTextTaskName);
+		this.et_descr_task = (EditText) findViewById(R.id.editTextMailAdresse);
 		this.isDown = true;
 
 		btn_create_new_task.setOnClickListener(new View.OnClickListener()
@@ -41,9 +41,8 @@ public class TaskCreationActivity extends ActionBarActivity
 	protected void btnCreateNewTaskClicked()
 	{
 		Task s = new Task(this.et_name_task.getText().toString());
-		System.out.println(s.getName());
 
-		this.dbHelpSession.insertTask(s.getName(), (String) getIntent().getExtras().get("id"));
+		this.dbHelpSession.insertTask(s.getName(), (String) getIntent().getExtras().get("id"), this.et_descr_task.getText().toString());
 
 		this.finish();
 	}
@@ -65,7 +64,6 @@ public class TaskCreationActivity extends ActionBarActivity
 			if (this.isDown)
 			{
 				this.isDown = false;
-				System.out.println("ENTER");
 				final Button btn_create_new_Task = (Button) findViewById(R.id.btnCreateTask);
 				btn_create_new_Task.callOnClick();
 				return true;
@@ -104,5 +102,6 @@ public class TaskCreationActivity extends ActionBarActivity
 	private EditText et_name_task;
 	private boolean isDown;
 	private DBHelperSessions dbHelpSession;
+	private EditText et_descr_task;
 
 }

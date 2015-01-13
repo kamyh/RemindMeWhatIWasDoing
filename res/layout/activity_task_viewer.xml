@@ -16,6 +16,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
         android:background="#34495e"
+        android:orientation="horizontal"
         android:paddingRight="15dp" >
 
         <ImageView
@@ -59,7 +60,7 @@
             android:paddingBottom="20dp"
             android:paddingLeft="5dp"
             android:paddingTop="3dp"
-            android:text="description"
+            android:text="Description"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="#FFFF"
             android:textSize="18dp" />
@@ -78,30 +79,37 @@
         </TableLayout>
     </ScrollView>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/title_img"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/scrollView_periods"
         android:layout_marginBottom="2dp"
         android:background="#34495e"
-        android:orientation="vertical" >
+        android:orientation="horizontal"
+        android:paddingRight="15dp" >
+
+        <ImageView
+            android:id="@+id/imageView_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:paddingTop="5dp"
+            android:src="@drawable/ic_delete" />
 
         <TextView
-            android:id="@+id/TextView01"
-            android:layout_width="match_parent"
+            android:id="@+id/pics_name"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
             android:layout_marginBottom="5dp"
             android:background="#34495e"
             android:paddingBottom="20dp"
             android:paddingLeft="5dp"
             android:paddingTop="3dp"
-            android:text="@string/title_pics"
+            android:text="Pictures"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#FFFF"
-            android:textSize="18dp" />
-    </LinearLayout>
+            android:textColor="#FFFF" />
+    </RelativeLayout>
 
     <ScrollView
         android:id="@+id/scrollView_content"

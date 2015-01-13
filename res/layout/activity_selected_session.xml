@@ -22,13 +22,14 @@
     <ScrollView
         android:id="@+id/scrollView_content"
         android:layout_width="match_parent"
-        android:layout_height="320dp"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/LinearLayout1"
         android:layout_below="@+id/selectedSessionName" >
 
         <TableLayout
             android:id="@+id/mainLayoutSelectedSession"
             android:layout_width="match_parent"
-            android:layout_height="91dp" >
+            android:layout_height="wrap_content" >
         </TableLayout>
     </ScrollView>
 

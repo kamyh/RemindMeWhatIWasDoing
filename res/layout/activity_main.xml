@@ -88,8 +88,18 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="Copiright - Deruaz Vincent - 2014"
+        android:text="Copiright - Deruaz Vincent - 2014-2015"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="#95a5a6" />
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/LinearLayout1"
+        android:layout_centerHorizontal="true"
+        android:paddingBottom="5dp"
+        android:scaleType="center"
+        android:src="@drawable/ic_launcher" />
 
 </RelativeLayout>

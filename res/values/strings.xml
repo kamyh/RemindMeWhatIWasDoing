@@ -15,7 +15,7 @@
     <string name="title_activity_sessions">Sessions</string>
     <string name="title_activity_options">Options</string>
     <string name="title_activity_about">About</string>
-    <string name="title_activity_selected_session">Name seesion</string>
+    <string name="title_activity_selected_session">Session</string>
     <string name="title_activity_task_creation">New Task</string>
     <string name="title_activity_share">Share</string>
     <string name="title_activity_logs">Logs</string>
@@ -47,7 +47,7 @@
     <string name="about_part_1">"Application to record activity/task to realise performances report."</string>
     <string name="about_part_2">Originally created during a mobile developpement course during my studies.</string>
     <string name="title_activity_pictures">PicturesActivity</string>
-    <string name="title_activity_task_viewer">TaskViewerActivity</string>
+    <string name="title_activity_task_viewer">Task</string>
     <string name="title_pics">Pictures</string>
 
 </resources>

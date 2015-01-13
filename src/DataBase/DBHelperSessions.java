@@ -6,15 +6,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteStatement;
-import android.util.Log;
+import android.widget.Toast;
 
 public class DBHelperSessions extends SQLiteOpenHelper
 {
@@ -50,24 +48,25 @@ public class DBHelperSessions extends SQLiteOpenHelper
 	public DBHelperSessions(Context context)
 	{
 		super(context, DATABASE_NAME, null, 2);
+		this.parent = context;
 	}
 
 	@Override
 	public void onCreate(SQLiteDatabase db)
 	{
-		// TODO Auto-generated method stub
-
-		db.execSQL("create table sessions " + "(id integer primary key, name text,created_at text, updated_at text,paused integer default 0)");
+		db.execSQL("PRAGMA foreign_keys = ON;");
+		db.execSQL("create table sessions " + "(id integer primary key, name text,created_at text, updated_at text,paused integer default 0,unique (name))");
 		db.execSQL("create table tasks "
-				+ "(id integer primary key, name text, id_session integer, description text, location text,elapsed integer default 0,restart integer default 0,geo_tag text default '')");
-		db.execSQL("create table periods " + "(id integer primary key, id_task integer, started_at text, stoped_at text, closed integer default -1)");
-		db.execSQL("create table pictures " + "(id integer primary key, id_task integer, path text)");
+				+ "(id integer primary key, name text, id_session integer, description text, location text,elapsed integer default 0,restart integer default 0,geo_tag text default '',unique (name,id_session),FOREIGN KEY(id_session) REFERENCES sessions(id) ON DELETE CASCADE)");
+		db.execSQL("create table periods "
+				+ "(id integer primary key, id_task integer, started_at text, stoped_at text, closed integer default -1,FOREIGN KEY(id_task) REFERENCES tasks(id) ON DELETE CASCADE)");
+		db.execSQL("create table pictures " + "(id integer primary key, id_task integer, path text,FOREIGN KEY(id_task) REFERENCES tasks(id) ON DELETE CASCADE)");
+		db.execSQL("PRAGMA foreign_keys=ON");
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
 	{
-		// TODO Auto-generated method stub
 		db.execSQL("DROP TABLE IF EXISTS sessions");
 		db.execSQL("DROP TABLE IF EXISTS tasks");
 		db.execSQL("DROP TABLE IF EXISTS periods");
@@ -87,8 +86,30 @@ public class DBHelperSessions extends SQLiteOpenHelper
 		contentValues.put("created_at", currentDateandTime);
 		contentValues.put("updated_at", currentDateandTime);
 
-		db.insert("sessions", null, contentValues);
+		try
+		{
+			// INSERT fct doesn't trow any exception :(
+			db.insertOrThrow("sessions", null, contentValues);
+			Toast.makeText(this.parent, "Session Created successfully", Toast.LENGTH_SHORT).show();
+		}
+		catch (android.database.sqlite.SQLiteConstraintException e)
+		{
+			Toast.makeText(this.parent, "Session name already existing. Choose another one!", Toast.LENGTH_LONG).show();
+		}
+
+		db.close();
 		return true;
+	}
+
+	@Override
+	public void onOpen(SQLiteDatabase db)
+	{
+		super.onOpen(db);
+		if (!db.isReadOnly())
+		{
+			// Enable foreign key constraints
+			db.execSQL("PRAGMA foreign_keys=ON;");
+		}
 	}
 
 	public boolean insertPathPictures(String idTask, String path)
@@ -100,6 +121,9 @@ public class DBHelperSessions extends SQLiteOpenHelper
 		contentValues.put("path", path);
 
 		db.insert("pictures", null, contentValues);
+		Toast.makeText(this.parent, "Picture added successfully", Toast.LENGTH_SHORT).show();
+
+		db.close();
 		return true;
 	}
 
@@ -118,8 +142,6 @@ public class DBHelperSessions extends SQLiteOpenHelper
 		db.insert("periods", null, contentValues);
 
 		db.close();
-
-		Log.i("TIME", currentDateandTime);
 
 		return true;
 	}
@@ -162,6 +184,7 @@ public class DBHelperSessions extends SQLiteOpenHelper
 
 		res.moveToFirst();
 
+		db.close();
 		return res;
 	}
 
@@ -171,9 +194,6 @@ public class DBHelperSessions extends SQLiteOpenHelper
 		SQLiteDatabase db = this.getWritableDatabase();
 		Cursor cur = db.rawQuery("select * from pictures where id_task=" + id_task, null);
 
-		System.out.println("select * from pictures where id_task=" + id_task);
-		System.out.println(cur.getCount());
-
 		if (cur != null)
 		{
 			cur.moveToFirst();
@@ -181,11 +201,11 @@ public class DBHelperSessions extends SQLiteOpenHelper
 			while (!cur.isAfterLast())
 			{
 				res.add(cur.getString(2));
-				System.out.println(cur.getString(2));
 				cur.moveToNext();
 			}
 		}
 
+		db.close();
 		return res;
 	}
 
@@ -199,6 +219,7 @@ public class DBHelperSessions extends SQLiteOpenHelper
 
 			res.moveToNext();
 		}
+
 	}
 
 	public void suspendTasks()
@@ -244,15 +265,27 @@ public class DBHelperSessions extends SQLiteOpenHelper
 		return true;
 	}
 
-	public boolean insertTask(String name, String string)
+	public boolean insertTask(String name, String string, String descr)
 	{
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues contentValues = new ContentValues();
 
 		contentValues.put("name", name);
 		contentValues.put("id_session", string);
+		contentValues.put("description", descr);
 
-		db.insert("tasks", null, contentValues);
+		try
+		{
+			// INSERT fct doesn't trow any exception :(
+			db.insertOrThrow("tasks", null, contentValues);
+			Toast.makeText(this.parent, "Task Created successfully", Toast.LENGTH_SHORT).show();
+		}
+		catch (android.database.sqlite.SQLiteConstraintException e)
+		{
+			Toast.makeText(this.parent, "Task name already existing. Choose another one!", Toast.LENGTH_LONG).show();
+		}
+
+		db.close();
 		return true;
 	}
 
@@ -260,6 +293,8 @@ public class DBHelperSessions extends SQLiteOpenHelper
 	{
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor res = db.rawQuery("select * from sessions where id=" + id + "", null);
+
+		db.close();
 		return res;
 	}
 
@@ -267,6 +302,8 @@ public class DBHelperSessions extends SQLiteOpenHelper
 	{
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor res = db.rawQuery("select * from tasks where id=" + id + "", null);
+
+		db.close();
 		return res;
 	}
 
@@ -275,6 +312,8 @@ public class DBHelperSessions extends SQLiteOpenHelper
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor res = db.rawQuery("select created_at,updated_at from sessions where id=" + id, null);
 		res.moveToFirst();
+
+		db.close();
 		return res.getString(0) + "\n" + res.getString(1);
 	}
 
@@ -282,6 +321,8 @@ public class DBHelperSessions extends SQLiteOpenHelper
 	{
 		SQLiteDatabase db = this.getReadableDatabase();
 		int numRows = (int) DatabaseUtils.queryNumEntries(db, SESSION_TABLE_NAME);
+
+		db.close();
 		return numRows;
 	}
 
@@ -289,6 +330,8 @@ public class DBHelperSessions extends SQLiteOpenHelper
 	{
 		SQLiteDatabase db = this.getReadableDatabase();
 		int numRows = (int) DatabaseUtils.queryNumEntries(db, TASK_TABLE_NAME);
+
+		db.close();
 		return numRows;
 	}
 
@@ -300,6 +343,7 @@ public class DBHelperSessions extends SQLiteOpenHelper
 
 		db.update("sessions", contentValues, "id = ? ", new String[] { Integer.toString(id) });
 
+		db.close();
 		return true;
 	}
 
@@ -310,25 +354,33 @@ public class DBHelperSessions extends SQLiteOpenHelper
 		contentValues.put("name", name);
 
 		db.update("tasks", contentValues, "id = ? ", new String[] { Integer.toString(id) });
+		db.close();
 		return true;
 	}
 
 	public Integer deleteSession(String id)
 	{
 		SQLiteDatabase db = this.getWritableDatabase();
-		return db.delete("sessions", "id = ? ", new String[] { id });
+		int res = db.delete("sessions", "id = ? ", new String[] { id });
+		Toast.makeText(this.parent, "Session deleted successfully", Toast.LENGTH_SHORT).show();
+
+		db.close();
+		return res;
 	}
 
 	public Integer deleteTask(Integer id)
 	{
 		SQLiteDatabase db = this.getWritableDatabase();
-		return db.delete("tasks", "id = ? ", new String[] { Integer.toString(id) });
+		int res = db.delete("tasks", "id = ? ", new String[] { Integer.toString(id) });
+		Toast.makeText(this.parent, "Task deleted successfully", Toast.LENGTH_SHORT).show();
+
+		db.close();
+		return res;
 	}
 
 	public ArrayList<String> getAllSessionName()
 	{
-		ArrayList<String> array_list = new ArrayList();
-		// hp = new HashMap();
+		ArrayList<String> array_list = new ArrayList<String>();
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor res = db.rawQuery("select * from sessions", null);
 		res.moveToFirst();
@@ -337,12 +389,14 @@ public class DBHelperSessions extends SQLiteOpenHelper
 			array_list.add(res.getString(res.getColumnIndex(SESSION_COLUMN_NAME)));
 			res.moveToNext();
 		}
+
+		db.close();
 		return array_list;
 	}
 
 	public ArrayList<String> getAllTasksIDSession(String string)
 	{
-		ArrayList<String> array_list = new ArrayList();
+		ArrayList<String> array_list = new ArrayList<String>();
 		// hp = new HashMap();
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor res = db.rawQuery("select * from tasks where id_session=" + string, null);
@@ -352,37 +406,35 @@ public class DBHelperSessions extends SQLiteOpenHelper
 			array_list.add(res.getString(res.getColumnIndex(TASK_COLUMN_NAME)));
 			res.moveToNext();
 		}
+
+		db.close();
 		return array_list;
 	}
 
 	public Cursor getAllTasks(String session_id)
 	{
-		ArrayList<String> array_list = new ArrayList();
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor res = db.rawQuery("select * from tasks where id_session=" + session_id, null);
 		res.moveToFirst();
 
+		db.close();
 		return res;
 	}
 
 	public void removeAllSession()
 	{
-		System.out.println(this.numberOfRowsSession());
-
 		SQLiteDatabase db = this.getWritableDatabase();
 		db.delete("sessions", null, null);
 
-		System.out.println(this.numberOfRowsSession());
+		db.close();
 	}
 
 	public void removeAllTask()
 	{
-		System.out.println(this.numberOfRowsTask());
-
 		SQLiteDatabase db = this.getWritableDatabase();
 		db.delete("tasks", null, null);
 
-		System.out.println(this.numberOfRowsTask());
+		db.close();
 	}
 
 	public int getSessionID(String sessionName)
@@ -390,7 +442,10 @@ public class DBHelperSessions extends SQLiteOpenHelper
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor res = db.rawQuery("select * from sessions where name='" + sessionName + "'", null);
 		res.moveToFirst();
-		return res.getInt(res.getColumnIndex(SESSION_COLUMN_ID));
+		int result = res.getInt(res.getColumnIndex(SESSION_COLUMN_ID));
+
+		db.close();
+		return result;
 	}
 
 	public int getTaskID(String taskName, String session_id)
@@ -398,7 +453,10 @@ public class DBHelperSessions extends SQLiteOpenHelper
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor res = db.rawQuery("select * from tasks where name='" + taskName + "' and id_session=" + session_id, null);
 		res.moveToFirst();
-		return res.getInt(res.getColumnIndex(TASK_COLUMN_ID));
+		int result = res.getInt(res.getColumnIndex(TASK_COLUMN_ID));
+
+		// db.close(); //TODO if uncomment crash why ???
+		return result;
 	}
 
 	public String getSessionName(String j)
@@ -417,17 +475,21 @@ public class DBHelperSessions extends SQLiteOpenHelper
 		return res.getString(res.getColumnIndex(TASK_COLUMN_NAME));
 	}
 
+	public String getTaskDescr(String id)
+	{
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor res = db.rawQuery("select * from tasks where id='" + id + "'", null);
+		res.moveToFirst();
+		return res.getString(res.getColumnIndex(TASK_COLUMN_DESCRIPTION));
+	}
+
 	public int getElapsedTimeTask(String taskName, String session_id)
 	{
-
 		SQLiteDatabase db = this.getReadableDatabase();
-		// TODO add time until now() if last periods isn't closed
 		int id_task = getTaskID(taskName, session_id);
 		int result = 0;
 
-		Cursor res_2 = db.rawQuery("select * from periods where id_task=" + id_task, null);
-
-		int id = 0;
+		Cursor res_2 = db.rawQuery("select * from periods where id_task='" + id_task + "'", null);
 
 		if (res_2 != null && res_2.getCount() > 0)
 		{
@@ -451,12 +513,10 @@ public class DBHelperSessions extends SQLiteOpenHelper
 					}
 					catch (ParseException e)
 					{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
 				else
-				// TODO to Test
 				{
 					try
 					{
@@ -471,7 +531,6 @@ public class DBHelperSessions extends SQLiteOpenHelper
 					}
 					catch (ParseException e)
 					{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 
@@ -493,7 +552,7 @@ public class DBHelperSessions extends SQLiteOpenHelper
 		contentValues.put("elapsed", elapsedTimeSec);
 
 		db.update("tasks", contentValues, "id = ? ", new String[] { Integer.toString(id) });
-
+		db.close();
 	}
 
 	public boolean isUnderWay(int task_id)
@@ -502,16 +561,11 @@ public class DBHelperSessions extends SQLiteOpenHelper
 
 		Cursor res = db.rawQuery("select * from periods where id_task=" + task_id, null);
 
-		Log.d("IDID", task_id + "");
-
 		if (res.getCount() > 0)
 		{
-			int id = 0;
 			if (res != null)
 			{
 				res.moveToLast();
-
-				id = res.getInt(0);
 
 				if (res.getInt(4) == -1)
 				{
@@ -607,6 +661,7 @@ public class DBHelperSessions extends SQLiteOpenHelper
 		ContentValues args = new ContentValues();
 		args.put("geo_tag", tag);
 		db.update("tasks", args, strFilter, null);
+		Toast.makeText(this.parent, "Position geotagged successfully", Toast.LENGTH_SHORT).show();
 	}
 
 	public boolean isGeoTagged(int task_id)
@@ -637,5 +692,29 @@ public class DBHelperSessions extends SQLiteOpenHelper
 		}
 		return false;
 	}
+
+	public int removePathPictures(String s)
+	{
+		SQLiteDatabase db = this.getWritableDatabase();
+		int rep = db.delete("pictures", "path = ? ", new String[] { s });
+		Toast.makeText(this.parent, "Pictures deleted successfully", Toast.LENGTH_SHORT).show();
+		db.close();
+
+		return rep;
+	}
+
+	public void fixDescr(int id, String descr)
+	{
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		String strFilter = "id=" + id;
+		ContentValues args = new ContentValues();
+		args.put("description", descr);
+		db.update("tasks", args, strFilter, null);
+
+		db.close();
+	}
+
+	private Context parent;
 
 }

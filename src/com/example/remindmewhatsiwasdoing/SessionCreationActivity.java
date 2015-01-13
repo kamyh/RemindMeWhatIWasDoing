@@ -3,13 +3,11 @@ package com.example.remindmewhatsiwasdoing;
 import DataBase.DBHelperSessions;
 import Model.Session;
 import android.support.v7.app.ActionBarActivity;
-import android.text.Editable;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnKeyListener;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -37,13 +35,11 @@ public class SessionCreationActivity extends ActionBarActivity
 			}
 		});
 
-		System.out.println(this.dbHelpSession.numberOfRowsSession());
 	}
 
 	private void btnCreateNewSessionClicked()
 	{
 		Session s = new Session(this.et_name_session.getText().toString());
-		System.out.println(s.getName());
 
 		this.dbHelpSession.insertSession(s.getName());
 
@@ -88,7 +84,6 @@ public class SessionCreationActivity extends ActionBarActivity
 			if (this.isDown)
 			{
 				this.isDown = false;
-				System.out.println("ENTER");
 				final Button btn_create_new_session = (Button) findViewById(R.id.btn_create_session);
 				btn_create_new_session.callOnClick();
 				return true;

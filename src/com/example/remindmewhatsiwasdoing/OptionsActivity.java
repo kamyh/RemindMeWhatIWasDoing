@@ -1,29 +1,13 @@
 package com.example.remindmewhatsiwasdoing;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
-import DataBase.DBHelperSessions;
-import Tools.MyTimer;
 import android.support.v7.app.ActionBarActivity;
-import android.text.Editable;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 public class OptionsActivity extends ActionBarActivity
 {
@@ -34,6 +18,11 @@ public class OptionsActivity extends ActionBarActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_options);
 
+		control();
+	}
+
+	private void control()
+	{
 		final Button btn_reset_all_session = (Button) findViewById(R.id.btn_reset_session);
 
 		btn_reset_all_session.setOnClickListener(new View.OnClickListener()

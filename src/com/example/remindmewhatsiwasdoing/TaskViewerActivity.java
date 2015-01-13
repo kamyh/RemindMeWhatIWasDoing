@@ -1,71 +1,41 @@
 package com.example.remindmewhatsiwasdoing;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
 import DataBase.DBHelperSessions;
-import Model.Task;
-import Tools.GPS;
 import Tools.MyTimer;
-import android.support.v4.util.ArrayMap;
 import android.support.v7.app.ActionBarActivity;
-import android.text.Editable;
-import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.database.MergeCursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.provider.MediaStore;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
-
-//TODO close all db opened
-//TODO task name unique for each session
-//TODO if delete session delete task/periodss
-//TODO lock in portrait
 
 public class TaskViewerActivity extends ActionBarActivity
 {
@@ -73,6 +43,8 @@ public class TaskViewerActivity extends ActionBarActivity
 	private int screenWidth;
 
 	private int density;
+
+	private int screenHeight;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -82,6 +54,7 @@ public class TaskViewerActivity extends ActionBarActivity
 
 		DisplayMetrics metrics = this.getResources().getDisplayMetrics();
 		screenWidth = metrics.widthPixels;
+		screenHeight = metrics.heightPixels;
 		this.density = metrics.densityDpi;
 
 		setContentView(R.layout.activity_task_viewer);
@@ -104,47 +77,22 @@ public class TaskViewerActivity extends ActionBarActivity
 		fillView();
 	}
 
-	public static Bitmap decodeFile(String filePath, int WIDTH, int HIGHT)
-	{
-		try
-		{
-
-			File f = new File(filePath);
-
-			BitmapFactory.Options o = new BitmapFactory.Options();
-			o.inJustDecodeBounds = true;
-			BitmapFactory.decodeStream(new FileInputStream(f), null, o);
-
-			final int REQUIRED_WIDTH = WIDTH;
-			final int REQUIRED_HIGHT = HIGHT;
-			int scale = 1;
-			while (o.outWidth / scale / 2 >= REQUIRED_WIDTH && o.outHeight / scale / 2 >= REQUIRED_HIGHT)
-				scale += 1;
-
-			BitmapFactory.Options o2 = new BitmapFactory.Options();
-			o2.inSampleSize = scale;
-			return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
-		}
-		catch (FileNotFoundException e)
-		{
-			e.printStackTrace();
-		}
-		return null;
-	}
-
 	private void fillView()
 	{
 		TableLayout content = (TableLayout) findViewById(R.id.TableLayout_periods);
+		content.removeAllViews();
 		Cursor periods = this.db.getAllPeriods(this.id);
 		SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy HH:mm:ss", Locale.FRANCE);
+		TextView taskViewName = (TextView) findViewById(R.id.task_name);
+		taskViewName.setText(this.db.getTaskName("" + this.id));
 
-		System.out.println("+++++-----> " + periods.getCount());
+		TextView taskViewDescr = (TextView) findViewById(R.id.info_description);
+		taskViewDescr.setText(this.db.getTaskDescr("" + this.id));
 
 		periods.moveToFirst();
 
 		while (!periods.isAfterLast())
 		{
-			System.out.println("&&&&&&&&&&&&&&");
 			TableRow row = new TableRow(this);
 			TableRow row_2 = new TableRow(this);
 			TextView started_at = new TextView(this);
@@ -211,9 +159,37 @@ public class TaskViewerActivity extends ActionBarActivity
 		loadPics();
 	}
 
+	public Bitmap resizeBitmap(int targetW, int targetH, String photoPath)
+	{
+		BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+		bmOptions.inJustDecodeBounds = true;
+		BitmapFactory.decodeFile(photoPath, bmOptions);
+		int photoW = bmOptions.outWidth;
+		int photoH = bmOptions.outHeight;
+
+		int scaleFactor = 1;
+		if ((targetW > 0) || (targetH > 0))
+		{
+			scaleFactor = Math.min(photoW / targetW, photoH / targetH);
+		}
+
+		bmOptions.inJustDecodeBounds = false;
+		bmOptions.inSampleSize = scaleFactor;
+		bmOptions.inPurgeable = true;
+
+		Matrix matrix = new Matrix();
+		matrix.postRotate(90);
+		Bitmap b = BitmapFactory.decodeFile(photoPath, bmOptions);
+		Bitmap rotatedBitmap = Bitmap.createBitmap(b, 0, 0, b.getWidth(), b.getHeight(), matrix, true);
+		return rotatedBitmap;
+	}
+
 	private void loadPics()
 	{
+		this.chks = new HashMap<String, CheckBox>();
+
 		TableLayout content = (TableLayout) findViewById(R.id.table_pictures);
+		content.removeAllViews();
 		int index = 0;
 		TableRow row = new TableRow(this);
 		row.setGravity(Gravity.CENTER);
@@ -225,8 +201,6 @@ public class TaskViewerActivity extends ActionBarActivity
 
 		for (String path : this.db.getPictures(this.id + ""))
 		{
-			System.out.println(path);
-
 			File file = new File(path);
 			if (file.exists())
 			{
@@ -234,15 +208,19 @@ public class TaskViewerActivity extends ActionBarActivity
 
 				File image = new File(path);
 				ImageView imageView = new ImageView(this);
+				RelativeLayout l = new RelativeLayout(this);
+				imageView.setImageBitmap(resizeBitmap(screenWidth / (2 * (screenWidth / this.density)), screenHeight / (2 * (screenHeight / this.density)), image.getAbsolutePath()));
+				imageView.setAdjustViewBounds(true);
+				CheckBox chk = new CheckBox(this);
+				chk.setBackgroundColor(Color.GRAY);
+				chk.getBackground().setAlpha(150);
+				l.setPadding(20, 10, 20, 10);
 
-				System.out.println(this.screenWidth);
-				System.out.println(this.density);
+				this.chks.put(image.getAbsolutePath(), chk);
 
-				// TODO pixels ? cm ???
-				int widthScaled = (int) (this.screenWidth / 3 / 3);
-				imageView.setImageBitmap(decodeFile(image.getAbsolutePath(), widthScaled, widthScaled));
-				imageView.setPadding(10, 10, 10, 10);
-				row.addView(imageView);
+				l.addView(imageView);
+				l.addView(chk);
+				row.addView(l);
 			}
 			if (index % 3 == 0)
 			{
@@ -250,7 +228,7 @@ public class TaskViewerActivity extends ActionBarActivity
 				row.setGravity(Gravity.CENTER);
 				lp = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);
 
-				lp.setMargins(10, 10, 10, 10);
+				lp.setMargins(20, 10, 20, 10);
 				row.setLayoutParams(lp);
 				content.addView(row);
 			}
@@ -259,9 +237,7 @@ public class TaskViewerActivity extends ActionBarActivity
 
 	private void controle()
 	{
-		// Add img btn pictures
 		ImageView image = (ImageView) findViewById(R.id.imageView_pictures);
-		// TODO
 		image.setId(2);
 
 		image.setOnClickListener(new View.OnClickListener()
@@ -275,6 +251,32 @@ public class TaskViewerActivity extends ActionBarActivity
 				captureImage(s);
 			}
 		});
+
+		ImageView btnDelete = (ImageView) findViewById(R.id.imageView_delete);
+		btnDelete.setId(2);
+
+		btnDelete.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				removePics();
+			}
+		});
+	}
+
+	protected void removePics()
+	{
+		for (String s : this.chks.keySet())
+		{
+			CheckBox c = this.chks.get(s);
+			if (c.isChecked())
+			{
+				new File(s).delete();
+				this.db.removePathPictures(s);
+			}
+		}
+		fillView();
 	}
 
 	@Override
@@ -303,7 +305,7 @@ public class TaskViewerActivity extends ActionBarActivity
 	public void onResume()
 	{
 		super.onResume();
-
+		fillView();
 	}
 
 	@Override
@@ -340,7 +342,6 @@ public class TaskViewerActivity extends ActionBarActivity
 		fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
 
 		intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-		this.task_id_pictures = task_id;
 
 		// start the image capture Intent
 		startActivityForResult(intent, CAMERA_CAPTURE_IMAGE_REQUEST_CODE);
@@ -362,7 +363,6 @@ public class TaskViewerActivity extends ActionBarActivity
 		{
 			if (!mediaStorageDir.mkdirs())
 			{
-				Log.d(IMAGE_DIRECTORY_NAME, "Oops! Failed create " + IMAGE_DIRECTORY_NAME + " directory");
 				return null;
 			}
 		}
@@ -391,9 +391,8 @@ public class TaskViewerActivity extends ActionBarActivity
 			if (resultCode == RESULT_OK)
 			{
 				// successfully captured the image
-				// TODO store path in DB fileUri.getPath()
-				Log.d("*** ", fileUri.getPath() + " " + this.id);
 				this.db.insertPathPictures(this.id + "", fileUri.getPath());
+
 			}
 			else if (resultCode == RESULT_CANCELED)
 			{
@@ -419,7 +418,7 @@ public class TaskViewerActivity extends ActionBarActivity
 	private static final String IMAGE_DIRECTORY_NAME = "remind_me";
 	private Uri fileUri; // file url to store image/video
 	private Bundle b;
-	private String task_id_pictures;
 	private int id;
+	private Map<String, CheckBox> chks;
 
 }
